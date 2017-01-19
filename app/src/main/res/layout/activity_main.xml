@@ -10,51 +10,47 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.lavie_z.jikken3.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/textView" />
-
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true">
 
-        <Button
-            android:text="スケジュール追加"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/addScheduleBtn" />
 
-        <Button
-            android:text="スケジュール削除"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/deleteScheduleBtn" />
-
-        <Button
-            android:text="進捗の更新"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
-            android:id="@+id/changeProgressBtn" />
-
-        <Button
-            android:text="Button"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/schedule1" />
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
 
-        <Button
-            android:text="Button"
+            <Button
+                android:text="スケジュール追加"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/addScheduleBtn" />
+
+            <Button
+                android:text="スケジュール削除"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/deleteScheduleBtn" />
+
+            <Button
+                android:text="進捗の更新"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:id="@+id/changeProgressBtn" />
+
+        </LinearLayout>
+
+        <ListView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/schedule2" />
-
+            android:layout_height="match_parent"
+            android:id="@+id/listview"/>
 
     </LinearLayout>
+
 </RelativeLayout>

@@ -2,9 +2,11 @@ package com.example.lavie_z.jikken3;
 
 import android.app.Activity;
 import android.content.Intent;
+import java.util.Calendar;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,12 +16,16 @@ import android.widget.Toast;
 
 public class AddTask extends Activity implements View.OnClickListener{
 
-    Schedule task;
+    Schedule task = new Schedule();
 
     EditText title;
     EditText explain;
     EditText priority;
     EditText requiredTime;
+
+    Button returnBtn;
+
+    AutoScheduleArranger arranger;
 
 //	AutoScheduleArranger arranger = new AutoScheduleArranger();
 
@@ -32,7 +38,13 @@ public class AddTask extends Activity implements View.OnClickListener{
         explain = (EditText) findViewById(R.id.editText2);
         priority = (EditText) findViewById(R.id.editText3);
         requiredTime =(EditText) findViewById(R.id.editText4);
+        returnBtn = (Button) findViewById(R.id.button);
 
+        returnBtn.setOnClickListener(this);
+
+        //インテントの受け取り
+
+//        arranger = (AutoScheduleArranger) getIntent().getSerializableExtra("arranger");
 
         Intent intent = getIntent();
         if(intent != null){
@@ -46,6 +58,8 @@ public class AddTask extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View v) {
 
+        System.out.println("RETURN");
+
         String strTitle = title.getText().toString();
         String strExplain = explain.getText().toString();
         String strRequiredTime = requiredTime.getText().toString();
@@ -53,16 +67,29 @@ public class AddTask extends Activity implements View.OnClickListener{
         if(strTitle.length() == 0
                 || strExplain.length() == 0
                 || strRequiredTime.length() == 0
-                || isPriority(priority.getText().toString())
+                || !isPriority(priority.getText().toString())
                 ){
-            Toast.makeText(this, "すべての項目を入力してください", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "正しく入力してください", Toast.LENGTH_SHORT).show();
+            return;
         }
         else {
             task.isEvent = false;
             task.title = strTitle;
             task.explanation = strExplain;
             task.requiredTime = Integer.parseInt(strRequiredTime);
+            task.startTimeB.set(2024, 1, 1, 12, 0);
+            task.endTimeB.set(2024, 1, 1, 12, 0);
+            task.endTimeB.add(Calendar.MINUTE , task.requiredTime);
+            task.priority = Integer.parseInt(priority.getText().toString());
         }
+
+        Intent data = new Intent();
+        data.putExtra("schedule", task);
+
+        setResult(RESULT_OK, data);
+
+        finish();
+
     }
 
 

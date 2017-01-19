@@ -1,28 +1,32 @@
 package com.example.lavie_z.jikken3;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.ServiceConfigurationError;
 
 /**
  * Created by LaVie_Z on 19/01/2017.
  */
 
-public class AutoScheduleArranger {
+public class AutoScheduleArranger implements Serializable {
+    // シリアライズバージョンID
+    private static final long serialVersionUID = 212993500286484661L;
 
-	public Schedule schedule1; //最初に存在するスケジュール
+	public Schedule schedule1;
 	public int progress;
 	public int scheduleID;
 
 	private Calendar cal;
 	private Schedule dbschedule = null;
 
+	public ArrayList<Schedule> list = new ArrayList<>();
+
 
 	AutoScheduleArranger(){
-
-		schedule1.startTimeB.set(2024, 1, 1, 12, 0);
-		schedule1.endTimeB.set(2024, 1, 1, 13, 0);
-		schedule1.startTimeA.set(2024, 1, 1, 12, 0);
-		schedule1.endTimeA.set(2024, 1, 1, 13, 0);
-
 
 	}
 
@@ -85,12 +89,45 @@ public class AutoScheduleArranger {
 
 	//スケジュール追加関数
 	public void addSchedule(Schedule schedule){
-		//スケジュールの追加ができるかどうかの判定を行う
-		if(pullSchedule()){ //データベースにアクセスし、現時刻に保存されているスケジュールを持ってくる
-			if(comparePriority(schedule, dbschedule)){ //優先順位を比較する
-				//スケジュールを入れ替える作業を行う
-			}//ScheduleDatebaseHandlerのadd関数を呼ぶ
-		}
+		Iterator<Schedule> iterator = list.iterator();
+
+        if (!iterator.hasNext()) {
+            list.add(schedule);
+            return;
+        }
+
+		while (iterator.hasNext()) {
+			Schedule scheduleTmp = iterator.next();
+			if(!isOverlap(schedule, scheduleTmp)) {
+                schedule.startTimeA = schedule.startTimeB;
+				list.add(schedule);
+			}
+			else {
+                System.out.println("sch "+String.valueOf(schedule.priority));
+                System.out.println("temp " + String.valueOf(scheduleTmp.priority));
+                if (schedule.priority > scheduleTmp.priority){
+                    scheduleTmp.startTimeA.setTimeInMillis(schedule.endTimeB.getTimeInMillis());
+                    scheduleTmp.endTimeA.setTimeInMillis(scheduleTmp.startTimeA.getTimeInMillis());
+                    scheduleTmp.endTimeA.add(Calendar.MINUTE, scheduleTmp.requiredTime);
+                    System.out.println(String.valueOf(scheduleTmp.requiredTime));
+                    schedule.startTimeA.setTimeInMillis(schedule.startTimeB.getTimeInMillis());
+                    schedule.endTimeA.setTimeInMillis(schedule.endTimeB.getTimeInMillis());
+                    list.add(schedule);
+                }
+                else {
+                    schedule.startTimeA.setTimeInMillis(scheduleTmp.endTimeB.getTimeInMillis());
+                    schedule.endTimeA.setTimeInMillis(schedule.startTimeA.getTimeInMillis());
+                    schedule.endTimeA.add(Calendar.MINUTE, schedule.requiredTime);
+                    list.add(schedule);
+                }
+			}
+
+            Collections.sort(list, new ScheduleComparator());
+
+        }
+
+        System.out.println(Integer.toString(list.size()));
+
 	}
 
 	//進捗更新関数
@@ -109,6 +146,27 @@ public class AutoScheduleArranger {
 		//ScheduleDatebaseHandlerのdelete関数を呼ぶ
 		return false;
 	}
+
+	//追加したいsch1がsch2に被ってるか？
+	public boolean isOverlap(Schedule sch1, Schedule sch2) {
+		if((sch2.startTimeA.getTimeInMillis() < sch1.endTimeB.getTimeInMillis()
+				&& sch1.endTimeB.getTimeInMillis() < sch2.endTimeA.getTimeInMillis()
+			)||(
+				sch2.startTimeA.getTimeInMillis() < sch1.startTimeB.getTimeInMillis()
+						&& sch1.startTimeB.getTimeInMillis() < sch2.endTimeA.getTimeInMillis()
+				) ){
+
+			return true;
+
+		}
+		else{
+			return false;
+		}
+	}
+
+    public int getScheduleSize() {
+        return list.size();
+    }
 
 
 
