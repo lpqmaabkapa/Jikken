@@ -12,7 +12,7 @@ import android.widget.ListView;
 import java.util.Calendar;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     Button addScheduleBtn;
     Button deleteScheduleBtn;
@@ -114,12 +114,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         listview.setAdapter(adapter);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                
-            }
-        });
+        listview.setOnItemClickListener(this);
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Intent intentAddTask = new Intent();
+        intentAddTask.setClass(this, com.example.lavie_z.jikken3.ScheduleInformation.class);
+        //Serializeに失敗???
+        intentAddTask.putExtra("schedule", arranger.list.get(position));
+
+        startActivity(intentAddTask);
 
     }
 
